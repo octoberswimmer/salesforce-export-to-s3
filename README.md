@@ -31,3 +31,11 @@ $ ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzip
 ```
 $ godotenv -f <(heroku config --shell) ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64
 ```
+
+## Run incremental exports
+
+Export all changes in the previous hour, rounded down to the beginning of the hour.
+
+```
+$ ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64 -s $(date -d "$(date +%Y-%m-%dT%H:00:00%z) -1 hour" +%Y-%m-%dT%H:%M:%S%z) -o $(date +%Y-%m-%d-%H0000-hourly) Account Contact Lead Opportunity
+```
