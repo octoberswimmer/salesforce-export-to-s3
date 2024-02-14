@@ -39,3 +39,14 @@ Export all changes in the previous hour, rounded down to the beginning of the ho
 ```
 $ ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64 -s $(date -d "$(date +%Y-%m-%dT%H:00:00%z) -1 hour" +%Y-%m-%dT%H:%M:%S%z) -o $(date +%Y-%m-%d-%H0000-hourly) Account Contact Lead Opportunity
 ```
+
+## Export Metadata
+
+Split up metadata into multiple exports if needed to avoid the 10,000 component limit.
+
+```
+$ force login -i $RO_ENDPOINT -u $RO_USERNAME -p $RO_PASSWORD
+$ force export metadata -x Report -x Dashboard
+$ force fetch -d metadata -t Report -t Dashboard
+$ s3-cli put --recursive --verbose metadata s3://salesforce-org-backups/metadata/$(date +%Y-%m-%d-%H%M%S)
+```
