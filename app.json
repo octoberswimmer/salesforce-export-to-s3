@@ -37,5 +37,11 @@
 			"description": "Salesforce Login Host",
 			"value": "login.salesforce.com"
 		}
+	},
+	"formation": {
+		"web": {
+			"quantity": 0,
+			"size": "eco"
+		}
 	}
 }
