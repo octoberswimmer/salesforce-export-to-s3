@@ -1,0 +1,41 @@
+{
+	"name": "Export Salesforce Data to S3",
+	"description": "Dump Salesforce data to an S3 bucket using ro",
+	"keywords": [
+		"ro",
+		"salesforce",
+		"backups"
+	],
+	"repository": "https://github.com/octoberswimmer/salesforce-backups",
+	"website": "https://www.octoberswimmer.com/ro-backup/",
+	"buildpacks": [
+		{
+			"url": "https://github.com/ph3nx/heroku-binary-buildpack"
+		}
+	],
+	"env": {
+		"AWS_DEFAULT_REGION": {
+			"description": "AWS Regon",
+			"value": "us-west-2"
+		},
+		"AWS_ACCESS_KEY_ID": {
+			"description": "AWS Access Key Id"
+		},
+		"AWS_SECRET_ACCESS_KEY": {
+			"description": "AWS Secret Access Key"
+		},
+		"S3_BUCKET": {
+			"description": "S3 Bucket Where Exports Should Be Stored"
+		},
+		"RO_USERNAME": {
+			"description": "Salesforce Username"
+		},
+		"RO_PASSWORD": {
+			"description": "Salesforce Password (with token, if needed)"
+		},
+		"RO_ENDPOINT": {
+			"description": "Salesforce Login Host",
+			"value": "login.salesforce.com"
+		}
+	}
+}

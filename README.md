@@ -1,6 +1,12 @@
 # Run Salesforce Export to S3 on Heroku
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 Use [ro](https://www.octoberswimmer.com/ro-backup/) to export Salesforce data to S3.
+
+## Installation
+
+Use the [Deploy to Heroku](https://heroku.com/deploy) button above to create a copy of the app.
 
 ## Set AWS credentials
 
