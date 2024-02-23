@@ -8,6 +8,12 @@ Use [ro](https://www.octoberswimmer.com/ro-backup/) to export Salesforce data to
 $ heroku config:set AWS_DEFAULT_REGION=us-west-2 AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
+Set S3 Bucket
+
+```
+$ heroku config:set S3_BUCKET=my-bucket
+```
+
 ## Set Salesforce credentials
 
 ```
@@ -17,19 +23,33 @@ $ heroku config:set RO_ENDPOINT=login.salesforce.com RO_USERNAME=user@example.co
 ## Run export on Heroku
 
 ```
-$ heroku run ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64
+$ heroku run ./bin/ro --s3-bucket $S3_BUCKET -f parquet --exclude-empty --unzipped --exclude-base64
 ```
 
 ## Run export on Heroku using [Scheduler](https://devcenter.heroku.com/articles/scheduler)
 
+Install free scheduler addon:
+
 ```
-$ ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64 --quiet
+$ heroku addons:create scheduler:standard
+```
+
+Configure data export job:
+
+```
+$ heroku addons:open scheduler
+```
+
+Example exporting to individual parquet files, one per object:
+
+```
+$ ./bin/ro --s3-bucket $S3_BUCKET -f parquet --exclude-empty --unzipped --exclude-base64 --quiet
 ```
 
 ## Run export locally
 
 ```
-$ godotenv -f <(heroku config --shell) ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64
+$ godotenv -f <(heroku config --shell) ./bin/ro --s3-bucket my-bucket -f parquet --exclude-empty --unzipped --exclude-base64
 ```
 
 ## Run incremental exports
@@ -37,7 +57,7 @@ $ godotenv -f <(heroku config --shell) ./bin/ro --s3-bucket salesforce-org-backu
 Export all changes in the previous hour, rounded down to the beginning of the hour.
 
 ```
-$ ./bin/ro --s3-bucket salesforce-org-backups -f parquet --exclude-empty --unzipped --exclude-base64 -s $(date -d "$(date +%Y-%m-%dT%H:00:00%z) -1 hour" +%Y-%m-%dT%H:%M:%S%z) -o $(date +%Y-%m-%d-%H0000-hourly) Account Contact Lead Opportunity
+$ heroku run ./bin/ro --s3-bucket $S3_BUCKET -f parquet --exclude-empty --unzipped --exclude-base64 -s $(date -d "$(date +%Y-%m-%dT%H:00:00%z) -1 hour" +%Y-%m-%dT%H:%M:%S%z) -o $(date +%Y-%m-%d-%H0000-hourly) Account Contact Lead Opportunity
 ```
 
 ## Export Metadata
@@ -48,5 +68,5 @@ Split up metadata into multiple exports if needed to avoid the 10,000 component 
 $ force login -i $RO_ENDPOINT -u $RO_USERNAME -p $RO_PASSWORD
 $ force export metadata -x Report -x Dashboard
 $ force fetch -d metadata -t Report -t Dashboard
-$ s3-cli put --recursive --verbose metadata s3://salesforce-org-backups/metadata/$(date +%Y-%m-%d-%H%M%S)
+$ s3-cli put --recursive --verbose metadata s3://S3_BUCKET/metadata/$(date +%Y-%m-%d-%H%M%S)
 ```
